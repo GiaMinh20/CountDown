@@ -15,12 +15,14 @@ import android.widget.TimePicker;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
     TextView timer_tv;
     Button start_btn;
     Button reset_btn;
+    Button finish_btn;
     CountDownTimer countDownTimer;
     Boolean counterIsActive = false;
     MediaPlayer mediaPlayer;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         timer_tv = findViewById(R.id.tv_time);
         start_btn = findViewById(R.id.btn_play);
         reset_btn = findViewById(R.id.btn_reset);
+        finish_btn=findViewById(R.id.btn_finish);
         mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.ring);
 
         timePicker = findViewById(R.id.time_picker);
@@ -89,6 +92,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 reset();
+            }
+        });
+
+        finish_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(counterIsActive == true){
+                    pause();
+                }else {
+                    resume();
+                }
             }
         });
     }
@@ -160,5 +174,32 @@ public class MainActivity extends AppCompatActivity {
         counterIsActive = false; //Set CountDown không hoạt động
         timePicker.setEnabled(true);
         timer_tv.setText("00:00:00");
+    }
+
+    private void resume(){
+        counterIsActive = true;
+        timePicker.setEnabled(false);
+        String s[] = timer_tv.getText().toString().split(Pattern.quote(":"));
+        long time = Long.parseLong(s[0])*3600+Long.parseLong(s[1])*60+Long.parseLong(s[2]);
+        countDownTimer = new CountDownTimer(time * 1000+100, 1000) {
+            //Chạy hàm update() để hiển thị thời gian đếm ngược
+            @Override
+            public void onTick(long l) {
+                update((int) l / 1000);
+            }
+
+            //Sau khi hoàn thành đếm ngược thì reset() đồng hồ rồi chạy media
+            @Override
+            public void onFinish() {
+                reset();
+                if (mediaPlayer != null) {
+                    mediaPlayer.start();
+                }
+            }
+        }.start();
+    }
+    public void pause(){
+        countDownTimer.cancel();
+        counterIsActive=false;
     }
 }

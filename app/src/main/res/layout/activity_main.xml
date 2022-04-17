@@ -118,8 +118,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginBottom="5dp"
                     android:layout_toEndOf="@id/btn_play"
-                    android:background="@drawable/ic_btn_process_finish"
-                    />
+                    android:background="@drawable/ic_btn_process_finish" />
 
             </RelativeLayout>
 
